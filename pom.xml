@@ -39,7 +39,7 @@
 						<applicationName>${applicationName}</applicationName>
 						<environment>${environment}</environment>
 						<workers>${workers}</workers>
-						<workerType>${workerType}</workerType> 
+						<workerType>${workerType}</workerType>
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
 				</configuration>
@@ -61,17 +61,17 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>5cb75be4-9ce8-4c74-bb96-dd9c191609b9</groupId>
-			<artifactId>bookmyshow-1</artifactId>
-			<version>1.0.12</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.5.5</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>5cb75be4-9ce8-4c74-bb96-dd9c191609b9</groupId>
+			<artifactId>bookmyshow-1</artifactId>
+			<version>1.0.13</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 
