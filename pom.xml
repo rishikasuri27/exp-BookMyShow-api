@@ -39,7 +39,7 @@
 						<applicationName>${applicationName}</applicationName>
 						<environment>${environment}</environment>
 						<workers>${workers}</workers>
-						<workerType>${workerType}</workerType>
+						<workerType>${workerType}</workerType> 
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
 				</configuration>
