@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <http:listener-config name="bookmyshow-1-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8083" />
+    </http:listener-config>
+    <apikit:config name="bookmyshow-1-config" api="resource::5cb75be4-9ce8-4c74-bb96-dd9c191609b9:bookmyshow-1:1.0.12:raml:zip:bookmyshow-1.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="974e0bfc-f207-4921-a989-6f43c7995eb7" >
+		<http:request-connection host="localhost" port="8081" connectionIdleTimeout="3000000"/>
+	</http:request-config>
+	<flow name="bookmyshow-1-main">
+        <http:listener config-ref="bookmyshow-1-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="bookmyshow-1-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="bookmyshow-1-console">
+        <http:listener config-ref="bookmyshow-1-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="bookmyshow-1-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\book:bookmyshow-1-config">
+		<http:request method="GET" doc:name="Request" doc:id="ee922cf9-c718-4dbc-9454-77f414aedb69" config-ref="HTTP_Request_configuration" path="/api/book">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"movie_name" : attributes.queryParams.movie_name,
+	"city_name" : attributes.queryParams.city_name
+}]]]></http:query-params>
+		</http:request>
+    </flow>
+    <flow name="get:\bookingDetails:bookmyshow-1-config">
+		<http:request method="GET" doc:name="Request" doc:id="032f3989-0157-4678-ad79-1901e904c31e" config-ref="HTTP_Request_configuration" path="/api/bookingDetails">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"orderID" : attributes.queryParams.orderID
+}]]]></http:query-params>
+		</http:request>
+    </flow>
+    <flow name="get:\city:bookmyshow-1-config">
+		<http:request method="GET" doc:name="Request" doc:id="e3713fd2-f3ea-4a8f-9090-92e077b7d900" config-ref="HTTP_Request_configuration" path="/api/city"/>
+    </flow>
+    <flow name="get:\city\(city_name):bookmyshow-1-config">
+		<logger level="INFO" doc:name="Logger" doc:id="eda2c280-22f2-4d68-92d1-ae8ba690cfc4" message='#[{"city_name" : attributes.uriParams.city_name}]'/>
+		<http:request method="GET" doc:name="Request" doc:id="43ff1086-abf2-4921-a2a9-a8865d9cffda" config-ref="HTTP_Request_configuration" path="/api/city/{city_name}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"city_name" : attributes.uriParams.city_name
+}]]]></http:uri-params>
+		</http:request>
+    </flow>
+    <flow name="get:\coupons:bookmyshow-1-config">
+		<http:request method="GET" doc:name="Request" doc:id="82dd34b0-dcc6-4f08-be84-c720561b6d68" config-ref="HTTP_Request_configuration" path="/api/coupons"/>
+    </flow>
+    <flow name="get:\movie\(movie_name):bookmyshow-1-config">
+		<logger level="INFO" doc:name="Logger" doc:id="435748c9-4c74-4a78-8005-bfc6f2fe1c25" message='#[{&#10;	"movie_name" : attributes.uriParams.movie_name&#10;}]'/>
+		<http:request method="GET" doc:name="Request" doc:id="9d89103d-0a90-487e-a3db-7fb423d55b07" config-ref="HTTP_Request_configuration" path="/api/movie/{movie_name}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"movie_name" : attributes.uriParams.movie_name
+}]]]></http:uri-params>
+		</http:request>
+    </flow>
+    <flow name="post:\book\location:application\json:bookmyshow-1-config">
+		<logger level="INFO" doc:name="Logger" doc:id="25676abe-f914-4d0c-86f4-15070ff34834" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="3b4194b4-fd11-45df-ad34-90f6f3440ab2" config-ref="HTTP_Request_configuration" path="/api/book/location"/>
+    </flow>
+</mule>
