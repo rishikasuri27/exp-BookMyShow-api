@@ -7,7 +7,6 @@
     <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="974e0bfc-f207-4921-a989-6f43c7995eb7">
         <http:request-connection host="sys-bookmyshow-api.us-e2.cloudhub.io" connectionIdleTimeout="3000000" />
     </http:request-config>
-    <api-gateway:autodiscovery apiId="17520856" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="e87638d5-7788-44e9-921e-783f02fa27e8" flowRef="bookmyshow-1-main" />
     <flow name="bookmyshow-1-main">
         <http:listener config-ref="bookmyshow-1-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
